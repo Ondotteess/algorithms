@@ -3,14 +3,6 @@ import subprocess
 import os
 import sys
 
-'''PATH = 'C:/Users/79505/Desktop/dir1/git_test'
-TEST_CMD = 'python file.py'
-TEST_OUT = 'Hello Git'
-
-start = 'e4ee1ea2646be1709ac059b0f6194dfcdde4289d'
-end   = '2cafa06f8a70ec492d68b0a887d4163b9159bf6f'
-'''
-
 PATH = input('PATH: ')
 start = input('FIRST COMMIT: ')
 end = input('LAST COMMIT: ')
