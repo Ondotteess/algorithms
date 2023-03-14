@@ -3,47 +3,61 @@
 
 using namespace std;
 
-
-void merge(vector<int>& arr, int left, int mid, int right) {
-    int i = left, j = mid + 1, k = left;
-    while (i <= mid && j <= right) {
-        if (arr[i] <= arr[j]) {
-            i++;
-        }
-        else {
-            for (int l = j; l > i; l--) {
-                swap(arr[l], arr[l - 1]);
-            }
-            i++;
-            j++;
-            mid++;
-        }
-    }
+void merge(vector<int> arr, int idx_left, int size_left, int idx_right, int size_right, int idx_res) {
+    int i = 0, j = 0, k = 0;
+    while ((i < size_left) && (j < size_right)) {
+        if (arr[idx_left + i] <= arr[idx_right + j]) { swap(arr[idx_res + k], arr[idx_left + i]); k++; i++; }
+        else { swap(arr[idx_res + k], arr[idx_right + j]); k++; j++; }
+    
+    
+    }  
+    while (i < size_left) { swap(arr[idx_res + k], arr[idx_left + i]); k++; i++; }
+    while (j < size_right) { swap(arr[idx_res + k], arr[idx_right + j]); k++; j++; }
+    return;
 }
 
-void mergeSort(vector<int>& arr, int left, int right) {
-    if (left < right) {
-        int mid = left + (right - left) / 2;
-        mergeSort(arr, left, mid);
-        mergeSort(arr, mid + 1, right);
-        merge(arr, left, mid, right);
-    }
+void merge_sort_in_place(vector<int> arr, int idx_left, int len, int idx_buffer) {
+    if (len == 1) return;
+    int middle = len / 2;
+    
+    merge_sort_in_place(arr, idx_left, middle, idx_buffer);
+    merge_sort_in_place(arr, idx_left + middle, len - middle, idx_buffer);
+    
+    merge(arr, idx_left, middle, idx_left + middle ,len - middle, idx_buffer);
+
+    for (int i = 0; i < len; i++) swap(arr[i], arr[idx_buffer + i]);
 }
 
-void printArray(vector<int> arr, int size)
-{
-    int i;
-    for (i = 0; i < size; i++)
-        cout << " " << arr[i];
-    cout << "\n";
+vector<int> sort_array(vector<int> arr, int idx_left, int len) {
+    int unsorted = len / 2;
+    merge_sort_in_place(arr, idx_left + unsorted, len - unsorted, idx_left);
+    while (unsorted != 1) {
+        int middle = unsorted / 2;
+        merge_sort_in_place(arr, idx_left, middle, idx_left + middle);
+        merge(arr, idx_left, middle, idx_left + unsorted, len - unsorted, idx_left + middle);
+        unsorted = middle;
+    }
+    for (int i = 0; (arr[i] > arr[i + 1] && i + 1 < len); swap(arr[i++], arr[i]));
+
+    return arr;
 }
 
 int main() {
-    vector<int> arr = { -2, 3, -5, 6234623, 67345, 4346, -56,73,4,-47,-68,  6,87, 46, 579, 55,21, -35,-4 ,7,45, -4572345 ,-46, 0, 0, 3, 78, -64, -3958, -6, 1, -6, -457 };
-    int arr_size = arr.size();
+    vector<int> arr = { 8656, 7630, -8776, 8730, -3234, -4692, 8018, -6175 };
+    cout << "Original array: ";
+    for (int x : arr) {
+        cout << x << " ";
+    }
+    cout << endl;
 
-    mergeSort(arr, 0, arr_size - 1);
+    arr = sort_array(arr, 0, arr.size());
 
-    printArray(arr, arr_size);
+    cout << "Sorted array: ";
+    for (int x : arr) {
+        cout << x << " ";
+    }
+    cout << endl;
+
+  
     return 0;
 }
