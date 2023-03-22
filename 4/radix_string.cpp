@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 void bubbleSort(string array[], int len) {
     
     bool swapped = true;
