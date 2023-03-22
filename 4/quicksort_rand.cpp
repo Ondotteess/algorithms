@@ -27,10 +27,15 @@ void quicksort(vector<int>& arr, int left, int right) {
     }
 }
 
-
 int main() {
  
    vector<int> arr = { -61698, -32249, 61173, 33772, -75481, 37317, -45253, -24448, 93096, 50610, 41413, 92439, -47067, -99751, -13164 };
    
    srand(time(NULL));
-   quicksort(arr, 0, a
+   quicksort(arr, 0, arr.size() - 1);
+
+   for (int x : arr) {
+       cout << x << " ";
+   }
+
+}
