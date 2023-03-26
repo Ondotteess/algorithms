@@ -10,7 +10,6 @@ bool check_sequence(vector<int> A) {
             if (((i == 0) || (A[i - 1] < A[i])) && ((A[i] != i + 1) || (A[i + 1] != A[i] - 1))) {
                 return false;
             }
-            i++;
         }
         i++;
     }
