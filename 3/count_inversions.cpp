@@ -7,8 +7,9 @@ int local = 0;
 int global = 0;
 
 
-void merge(int left_1, int right_1, int left_2, int right_2, int result, vector<int>& array, int buffer[]) {
+void merge(int left_1, int right_1, int left_2, int right_2, int result, vector<int>& array, vector<int> buffer) {
 
+    buffer.resize(array.size());
     int i = 0;
     int len_array = right_1 - left_1 + right_2 - left_2 + 2;
 
@@ -28,12 +29,12 @@ void merge(int left_1, int right_1, int left_2, int right_2, int result, vector<
     while (left_2 <= right_2) buffer[i++] = array[left_2++];
 
     for (i = 0; i < len_array; i++) array[result + i] = buffer[i];
-   
+
 }
 
 void merge_sort(int left, int right, vector<int>& array) {
     if (right - left == 0) return;
-    
+
     else if (right - left == 1) {
         if (array[right] < array[left]) {
             swap(array[right], array[left]);
@@ -51,7 +52,7 @@ void merge_sort(int left, int right, vector<int>& array) {
     merge_sort(left, mid, array);
     merge_sort(mid + 1, right, array);
 
-    int* buffer = new int[array.size()];
+    vector<int> buffer;
     merge(left, mid, mid + 1, right, left, array, buffer);
 }
 
@@ -65,6 +66,7 @@ bool isIdealPermutation(vector<int>& nums) {
 
     return (global == local);
 }
+
 int main() {
 
     vector<int> array = { 1, 2, 4, 3, 5, 6, 7, 9, 8 };
