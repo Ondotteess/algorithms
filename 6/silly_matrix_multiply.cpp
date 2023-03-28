@@ -180,7 +180,7 @@ int main() {
     clock_t start_time_1 = clock();
     matrix D = matrix_multiplication(A, B);
     int start_2 = clock();
-    cout << (std::clock() - start_time_1) / (double)CLOCKS_PER_SEC <<  " ";
+    cout << (clock() - start_time_1) / (double)CLOCKS_PER_SEC <<  " ";
 
     clock_t start_time_2 = clock();
     matrix F = matrix_recursion_multiply(A, B);
