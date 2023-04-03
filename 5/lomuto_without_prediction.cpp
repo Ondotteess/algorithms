@@ -1,3 +1,99 @@
+//#include <iostream>
+//
+//using namespace std;
+//
+//class DynamicArray {
+//private:
+//
+//    int* arr;
+//    int capacity;
+//    int size;
+//
+//public:
+//    DynamicArray() {
+//        arr = new int[1];
+//        capacity = 1;
+//        size = 0;
+//    }
+//
+//    ~DynamicArray() {
+//        delete[] arr;
+//    }
+//
+//    void pushBack(int value) {
+//        if (size == capacity) {
+//            int* new_arr = new int[capacity * 2];
+//            for (int i = 0; i < size; i++) {
+//                new_arr[i] = arr[i];
+//            }
+//            delete[] arr;
+//            arr = new_arr;
+//            capacity *= 2;
+//        }
+//        arr[size] = value;
+//        size++;
+//    }
+//
+//    int popBack() {
+//        if (size > 0) {
+//            return arr[--size];
+//        } else {
+//            cout << "nothing to return" << endl;
+//            return NULL;
+//        }
+//    }
+//
+//    int& operator[](int index) {
+//        if (index < size) {
+//            return arr[index];
+//        }
+//        else {
+//            std::cout << "Error: index out of range" << std::endl;
+//            exit(1);
+//        }
+//    }
+//
+//    int getSize() {
+//        return size;
+//    }
+//
+//    void printArr() {
+//        for (int i = 0; i < size; i++) {
+//            cout << arr[i] << ' ';
+//        }
+//        cout << endl;
+//    }
+//};
+//
+//int main() {
+//    DynamicArray array;
+//
+//    array.pushBack(1);
+//    array.pushBack(2);
+//    array.pushBack(3);
+//    array.pushBack(4);
+//    array.pushBack(5);
+//    array.pushBack(6);
+//    array.pushBack(7);
+//
+//    cout << array.getSize() << endl;
+//
+//    array.printArr();
+//
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//    cout << array.popBack() << endl;
+//
+//} 
+
+
 #include <iostream>
 #include <assert.h>
 #include <cstdlib>
@@ -8,7 +104,7 @@ using namespace std;
 long* lomuto_partition_branchfree(long* first, long* last) {
     assert(first <= last);
     if (last - first < 2)
-        return first; 
+        return first;
     --last;
     if (*first > *last)
         swap(*first, *last);
@@ -64,7 +160,7 @@ long* hoare_partition(long* first, long* last) {
 long* lomuto_partition(long* first, long* last) {
     assert(first <= last);
     if (last - first < 2)
-        return first; 
+        return first;
     --last;
     if (*first > *last)
         swap(*first, *last);
@@ -119,41 +215,76 @@ void quicksort_lomuto(long* first, long* last) {
 void generate_random_array(long arr[], size_t size, int min_val, int max_val) {
     srand(time(nullptr));
     for (size_t i = 0; i < size; ++i) {
-        arr[i] = rand() % (max_val - min_val + 1) + min_val; 
+        arr[i] = rand() % (max_val - min_val + 1) + min_val;
     }
 }
 
+inline void quicksort(vector<long>& arr, int left, int right) {
+    int i = left;
+    int j = right;
+    int pivot = arr[left + rand() % (right - left + 1)];
+
+    while (i <= j) {
+        while (arr[i] < pivot) i++;
+
+        while (arr[j] > pivot) j--;
+
+        if (i <= j) swap(arr[i++], arr[j--]);
+
+    }
+
+    if (left < j) {
+        quicksort(arr, left, j);
+    }
+    if (i < right) {
+        quicksort(arr, i, right);
+    }
+}
+
+void generate_random_vector(vector<long>& vec, int min, int max) {
+    for (int i = 0; i < vec.size(); i++) {
+        vec[i] = (rand() % max) + min;
+    }
+}
 
 int main() {
-    
-    const size_t array_size = 10000;
-    long array_1[array_size];
-    long array_2[array_size];
-    long array_3[array_size];
 
-    generate_random_array(array_1, array_size, 0, 1000);
-    generate_random_array(array_2, array_size, 0, 1000);
-    generate_random_array(array_3, array_size, 0, 1000);
+    const size_t array_size = 10000000;
 
+    long* array_1 = new long[array_size];
+    long* array_2 = new long[array_size];
+    long* array_3 = new long[array_size];
+
+    vector<long> vec(array_size);
+
+    generate_random_vector(vec, -1000, 2000);
+    generate_random_array(array_1, array_size, -100000, 100000);
+    generate_random_array(array_2, array_size, -100000, 100000);
+    generate_random_array(array_3, array_size, -100000, 100000);
     
     clock_t start_time_1 = clock();
-    quicksort_lomuto(begin(array_1), end(array_1));
-    clock_t end_time_1 = clock(); 
+    quicksort_lomuto(array_1, array_1 + array_size);
+    clock_t end_time_1 = clock();
     double elapsed_time_1 = double(end_time_1 - start_time_1) / CLOCKS_PER_SEC;
-    cout << "Elapsed time: " << elapsed_time_1 << " seconds." << endl;
-
+    cout << "Elapsed time lomuto: " << elapsed_time_1 << " seconds." << endl;
+    
     clock_t start_time_2 = clock();
-    quicksort_lomuto(begin(array_1), end(array_1));
+    quicksort_hoare(array_2, array_2 + array_size);
     clock_t end_time_2 = clock();
     double elapsed_time_2 = double(end_time_2 - start_time_2) / CLOCKS_PER_SEC;
-    cout << "Elapsed time: " << elapsed_time_2 << " seconds." << endl;
+    cout << "Elapsed time hoare: " << elapsed_time_2 << " seconds." << endl;
     
     clock_t start_time_3 = clock();
-    quicksort_lomuto(begin(array_1), end(array_1));
-    clock_t end_time_3 = clock(); 
+    quicksort_lomuto_branchfree(array_3, array_3 + array_size);
+    clock_t end_time_3 = clock();
     double elapsed_time_3 = double(end_time_3 - start_time_3) / CLOCKS_PER_SEC;
-    cout << "Elapsed time: " << elapsed_time_3 << " seconds." << endl;
+    cout << "Elapsed time lomuto branchfree: " << elapsed_time_3 << " seconds." << endl;
 
+    clock_t start_time_4 = clock();
+    quicksort(vec, 0, vec.size()-1);
+    clock_t end_time_4 = clock();
+    double elapsed_time_4 = double(end_time_4 - start_time_4) / CLOCKS_PER_SEC;
+    cout << "Elapsed time hoare (vector): " << elapsed_time_4 << " seconds." << endl;
 
 
 
