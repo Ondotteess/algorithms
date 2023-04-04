@@ -4,9 +4,10 @@ def shell_sort(arr):
     n = len(arr)
     gap = 1
     while gap <= n // 2:
-        gap = gap * 2 + 1
+        gap = gap * 2 
 
     while gap > 0:
+        gap -= 1
         for i in range(gap, n):
             temp = arr[i]
             j = i
@@ -14,10 +15,11 @@ def shell_sort(arr):
                 arr[j] = arr[j - gap]
                 j -= gap
             arr[j] = temp
-        gap = (gap - 1) // 2
+        gap += 1
+        gap //= 2
     return arr
 
-rand_arr = [random.randint(-9999, 9999) for _ in range(100000)]
+rand_arr = [random.randint(-9999, 9999) for _ in range(100_000)]
 rand_arr_2 = [x for x in rand_arr]
 
 rand_arr = shell_sort(rand_arr)
