@@ -14,9 +14,7 @@ private:
 
         int* newArr = new int[capacity];
 
-        for (int i = 0; i < size; i++) {
-            newArr[i] = arr[i];
-        }
+        for (int i = 0; i < size; i++)  newArr[i] = arr[i];       
 
         delete[] arr;
         arr = newArr;
@@ -27,9 +25,7 @@ private:
 
         int* newArr = new int[capacity];
 
-        for (int i = 0; i < size; i++) {
-            newArr[i] = arr[i];
-        }
+        for (int i = 0; i < size; i++) newArr[i] = arr[i];
 
         delete[] arr;
         arr = newArr;
