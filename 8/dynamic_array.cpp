@@ -49,7 +49,8 @@ public:
 
     void pop_back() {
         if (size == 0) {
-            throw out_of_range("Array is empty");
+            cout << "Error: Out of bounds!";
+            exit(0);
         }
         if (size == (capacity / 4)) {
             resize_2();
@@ -60,7 +61,8 @@ public:
 
     int& get_element(int index) {
         if (index < 0 || index >= size) {
-            throw out_of_range("Index out of range");
+            cout << "Error: Out of bounds!";
+            exit(0);
         }
 
         return arr[index];
