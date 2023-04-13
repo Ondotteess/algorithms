@@ -18,10 +18,10 @@ public:
 	int* data;
 
 
-	 Matrix(int s) {
-	 	size = s;
-	 	data = new int[s * s];
-	 }
+	Matrix(int s) {
+		size = s;
+		data = new int[s * s];
+	}
 
 	int* operator[](int index) {
 		return &data[index * size];
@@ -52,7 +52,7 @@ public:
 
 	void print_submatrix(Matrix& parent, int x_position, int y_position, int size) {
 		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) { 
+			for (int j = 0; j < size; j++) {
 				// cout << parent[y_position + i][x_position + j] << " ";
 				std::cout << typeid(parent[y_position + i][x_position + j]).name() << std::endl;
 			}
@@ -72,11 +72,11 @@ public:
 		return c;
 	}
 
-	
+
 };
- 
+
 Matrix matrix_multiply(Matrix& first, int a_x_pos, int a_y_pos,
-					   Matrix& second, int b_x_pos, int b_y_pos, int size) {
+	Matrix& second, int b_x_pos, int b_y_pos, int size) {
 	Matrix result(size);
 
 	for (int i = 0; i < size; ++i) {
@@ -95,7 +95,7 @@ Matrix matrix_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 
 Matrix recursion_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 						  Matrix& second, int b_x_pos, int b_y_pos, int size) {
-	if (size == 4) {
+	if (size == 2) {
 		return matrix_multiply(first, a_x_pos, a_y_pos, second, b_x_pos, b_y_pos, size);
 	}
 
@@ -115,8 +115,8 @@ Matrix recursion_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 	for (int i = 0; i < middle; ++i) {
 		for (int j = 0; j < middle; ++j) {
 			ret[i][j] = a_e[i][j] + b_g[i][j];
-			ret[i][j + middle] = c_e[i][j] + d_g[i][j];
-			ret[i + middle][j] = a_f[i][j] + b_h[i][j];
+			ret[i][j + middle] = a_f[i][j] + b_h[i][j];
+			ret[i + middle][j] = c_e[i][j] + d_g[i][j];
 			ret[i + middle][j + middle] = c_f[i][j] + d_h[i][j];
 		}
 	}
@@ -125,12 +125,14 @@ Matrix recursion_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 }
 
 int main() {
-	Matrix a(pow(2, 10));
-	Matrix b(pow(2, 10));
+	int matrix_size;
+	cout << "matrix size: ";
+	cin >> matrix_size;
+	Matrix a(pow(2, matrix_size));
+	Matrix b(pow(2, matrix_size));
 
 	a.fill_random(5, 0);
 	b.fill_random(5, 0);
-
 
 	auto start_time = std::chrono::high_resolution_clock::now();
 	Matrix c = recursion_multiply(a, 0, 0, b, 0, 0, a.size);
