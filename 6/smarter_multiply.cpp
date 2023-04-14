@@ -7,10 +7,6 @@
 
 using namespace std;
 
-
-
-
-
 class Matrix {
 public:
 
@@ -62,7 +58,7 @@ public:
 
 	}
 
-	
+
 
 };
 
@@ -104,7 +100,7 @@ Matrix matrix_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 }
 
 Matrix half_adder(Matrix& first, int a_x_pos, int a_y_pos,
-				  Matrix& second, int b_x_pos, int b_y_pos, int size) {
+	Matrix& second, int b_x_pos, int b_y_pos, int size) {
 
 	Matrix ret(size);
 
@@ -166,10 +162,10 @@ Matrix recursion_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 }
 
 
-Matrix strassen_multiply(Matrix& first, int a_x_pos, int a_y_pos, 
-						 Matrix& second, int b_x_pos, int b_y_pos, int size){
+Matrix strassen_multiply(Matrix& first, int a_x_pos, int a_y_pos,
+	Matrix& second, int b_x_pos, int b_y_pos, int size) {
 
-	if (size == 2) {
+	if (size == 16) {
 		return matrix_multiply(first, a_x_pos, a_y_pos, second, b_x_pos, b_y_pos, size);
 	}
 
@@ -228,7 +224,7 @@ Matrix strassen_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 			ret[i + middle][j + middle] = Q4[i][j];
 		}
 	}
-	
+
 	return ret;
 
 }
@@ -240,60 +236,55 @@ int main() {
 
 	Matrix a(pow(2, matrix_size));
 	Matrix b(pow(2, matrix_size));
+
+	Matrix x(pow(2, matrix_size));
+	Matrix y(pow(2, matrix_size));
 	
-	//Matrix x(pow(2, matrix_size));
-	//Matrix y(pow(2, matrix_size));
-	//
-	//Matrix q(pow(2, matrix_size));
-	//Matrix w(pow(2, matrix_size));
+	Matrix q(pow(2, matrix_size));
+	Matrix w(pow(2, matrix_size));
 
 	a.fill_random(5, 0);
 	b.fill_random(10, 0);
-	//x.fill_random(100, 0);
-	//y.fill_random(200, 0);
-	//q.fill_random(101, 0);
-	//w.fill_random(201, 0);
+	x.fill_random(100, 0);
+	y.fill_random(200, 0);
+	q.fill_random(101, 0);
+	w.fill_random(201, 0);
 
 
-	Matrix c = strassen_multiply(a, 0, 0, b, 0, 0, a.size);
-
-	c.print_matrix(); cout << endl;
-
-	Matrix d = matrix_multiply(a, 0, 0, b, 0, 0, a.size);
-
-	d.print_matrix();
-
-
-	//auto start_time = std::chrono::high_resolution_clock::now();
-	//Matrix c = recursion_multiply(a, 0, 0, b, 0, 0, a.size);
-	//auto end_time = std::chrono::high_resolution_clock::now();
+	//Matrix c = strassen_multiply(a, 0, 0, b, 0, 0, a.size);
 	//
-	//std::chrono::duration<double> elapsed_time_1 = end_time - start_time;
-	//std::cout << "Elapsed time recursion: " << elapsed_time_1.count() << " s" << std::endl;
+	//c.print_matrix(); cout << endl;
 	//
-	//// ----------------------------------------------------------------------------------------------- //
+	//Matrix d = matrix_multiply(a, 0, 0, b, 0, 0, a.size);
 	//
-	//start_time = std::chrono::high_resolution_clock::now();
-	//Matrix d = strassen_multiply(x, 0, 0, y, 0, 0, a.size);
-	//end_time = std::chrono::high_resolution_clock::now();
-	//
-	//
-	//std::chrono::duration<double> elapsed_time_2 = end_time - start_time;
-	//std::cout << "Elapsed time strassen: " << elapsed_time_2.count() << " s" << std::endl;
-	//
-	//// ----------------------------------------------------------------------------------------------- //
-	//
-	//start_time = std::chrono::high_resolution_clock::now();
-	//Matrix f = matrix_multiply(q, 0, 0, w, 0, 0, q.size);
-	//end_time = std::chrono::high_resolution_clock::now();
-	//
-	//std::chrono::duration<double> elapsed_time_3 = end_time - start_time;
-	//std::cout << "Elapsed time classic: " << elapsed_time_3.count() << " s" << std::endl;
+	//d.print_matrix();
 
 
-
-	//matrix size: 9
-	//Elapsed time : 0.971455 s
+	auto start_time = std::chrono::high_resolution_clock::now();
+	Matrix c = recursion_multiply(a, 0, 0, b, 0, 0, a.size);
+	auto end_time = std::chrono::high_resolution_clock::now();
+	
+	std::chrono::duration<double> elapsed_time_1 = end_time - start_time;
+	std::cout << "Elapsed time recursion: " << elapsed_time_1.count() << " s" << std::endl;
+	
+	// ----------------------------------------------------------------------------------------------- //
+	
+	start_time = std::chrono::high_resolution_clock::now();
+	Matrix d = strassen_multiply(x, 0, 0, y, 0, 0, a.size);
+	end_time = std::chrono::high_resolution_clock::now();
+	
+	
+	std::chrono::duration<double> elapsed_time_2 = end_time - start_time;
+	std::cout << "Elapsed time strassen: " << elapsed_time_2.count() << " s" << std::endl;
+	
+	// ----------------------------------------------------------------------------------------------- //
+	
+	start_time = std::chrono::high_resolution_clock::now();
+	Matrix f = matrix_multiply(q, 0, 0, w, 0, 0, q.size);
+	end_time = std::chrono::high_resolution_clock::now();
+	
+	std::chrono::duration<double> elapsed_time_3 = end_time - start_time;
+	std::cout << "Elapsed time classic: " << elapsed_time_3.count() << " s" << std::endl;
 
 
 	//  matrix size : 11
