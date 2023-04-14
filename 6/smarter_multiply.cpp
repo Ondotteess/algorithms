@@ -7,6 +7,10 @@
 
 using namespace std;
 
+
+
+
+
 class Matrix {
 public:
 
@@ -132,7 +136,7 @@ Matrix half_substractor(Matrix& first, int a_x_pos, int a_y_pos,
 
 Matrix recursion_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 	Matrix& second, int b_x_pos, int b_y_pos, int size) {
-	if (size == 16) {
+	if (size == 4) {
 		return matrix_multiply(first, a_x_pos, a_y_pos, second, b_x_pos, b_y_pos, size);
 	}
 
@@ -162,10 +166,10 @@ Matrix recursion_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 }
 
 
-Matrix strassen_multiply(Matrix& first, int a_x_pos, int a_y_pos,
-	Matrix& second, int b_x_pos, int b_y_pos, int size) {
+Matrix strassen_multiply(Matrix first, int a_x_pos, int a_y_pos,
+						 Matrix second, int b_x_pos, int b_y_pos, int size) {
 
-	if (size == 16) {
+	if (size == 4) {
 		return matrix_multiply(first, a_x_pos, a_y_pos, second, b_x_pos, b_y_pos, size);
 	}
 
@@ -184,16 +188,16 @@ Matrix strassen_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 	Matrix a_minus_c(middle);
 	Matrix e_plus_f(middle);
 
-	f_minus_h = half_substractor(second, b_x_pos + middle, b_y_pos, second, b_x_pos + middle, b_y_pos + middle, middle);
-	a_plus_b = half_adder(first, a_x_pos, a_y_pos, first, a_x_pos + middle, a_y_pos, middle);
-	c_plus_d = half_adder(first, a_x_pos, a_y_pos + middle, first, a_x_pos + middle, a_y_pos + middle, middle);
-	g_minus_e = half_substractor(second, b_x_pos, b_y_pos + middle, second, b_x_pos, b_y_pos, middle);
+	f_minus_h = half_substractor(second, b_x_pos, b_y_pos + middle, second, b_x_pos + middle, b_y_pos + middle, middle);
+	a_plus_b = half_adder(first, a_x_pos, a_y_pos, first, a_x_pos , a_y_pos + middle, middle);
+	c_plus_d = half_adder(first, a_x_pos + middle, a_y_pos, first, a_x_pos + middle, a_y_pos + middle, middle);
+	g_minus_e = half_substractor(second, b_x_pos + middle, b_y_pos , second, b_x_pos, b_y_pos, middle);
 	a_plus_d = half_adder(first, a_x_pos, a_y_pos, first, a_x_pos + middle, a_y_pos + middle, middle);
 	e_plus_h = half_adder(second, b_x_pos, b_y_pos, second, b_x_pos + middle, b_y_pos + middle, middle);
-	b_minus_d = half_substractor(first, a_x_pos + middle, a_y_pos, first, a_x_pos + middle, a_y_pos + middle, middle);
-	g_plus_h = half_adder(second, b_x_pos, b_y_pos + middle, second, b_x_pos + middle, b_y_pos + middle, middle);
-	a_minus_c = half_substractor(first, a_x_pos, a_y_pos, first, a_x_pos, a_x_pos + middle, middle);
-	e_plus_f = half_adder(second, b_x_pos, b_y_pos, second, b_x_pos + middle, b_y_pos, middle);
+	b_minus_d = half_substractor(first, a_x_pos, a_y_pos + middle, first, a_x_pos + middle, a_y_pos + middle, middle);
+	g_plus_h = half_adder(second, b_x_pos + middle, b_y_pos, second, b_x_pos + middle, b_y_pos + middle, middle);
+	a_minus_c = half_substractor(first, a_x_pos, a_y_pos, first, a_x_pos + middle, a_x_pos, middle);
+	e_plus_f = half_adder(second, b_x_pos, b_y_pos, second, b_x_pos, b_y_pos + middle, middle);
 
 
 	Matrix P1 = strassen_multiply(first, a_x_pos, a_y_pos, f_minus_h, 0, 0, middle);
@@ -260,35 +264,41 @@ int main() {
 	//d.print_matrix();
 
 
-	auto start_time = std::chrono::high_resolution_clock::now();
-	Matrix c = recursion_multiply(a, 0, 0, b, 0, 0, a.size);
-	auto end_time = std::chrono::high_resolution_clock::now();
-	
-	std::chrono::duration<double> elapsed_time_1 = end_time - start_time;
-	std::cout << "Elapsed time recursion: " << elapsed_time_1.count() << " s" << std::endl;
-	
-	// ----------------------------------------------------------------------------------------------- //
-	
-	start_time = std::chrono::high_resolution_clock::now();
-	Matrix d = strassen_multiply(x, 0, 0, y, 0, 0, a.size);
-	end_time = std::chrono::high_resolution_clock::now();
-	
-	
-	std::chrono::duration<double> elapsed_time_2 = end_time - start_time;
-	std::cout << "Elapsed time strassen: " << elapsed_time_2.count() << " s" << std::endl;
-	
-	// ----------------------------------------------------------------------------------------------- //
-	
-	start_time = std::chrono::high_resolution_clock::now();
-	Matrix f = matrix_multiply(q, 0, 0, w, 0, 0, q.size);
-	end_time = std::chrono::high_resolution_clock::now();
-	
-	std::chrono::duration<double> elapsed_time_3 = end_time - start_time;
-	std::cout << "Elapsed time classic: " << elapsed_time_3.count() << " s" << std::endl;
+	//auto start_time = std::chrono::high_resolution_clock::now();
+	//Matrix c = recursion_multiply(a, 0, 0, b, 0, 0, a.size);
+	//auto end_time = std::chrono::high_resolution_clock::now();
+	//
+	//std::chrono::duration<double> elapsed_time_1 = end_time - start_time;
+	//std::cout << "Elapsed time recursion: " << elapsed_time_1.count() << " s" << std::endl;
+	//
+	//// ----------------------------------------------------------------------------------------------- //
+	//
+	//start_time = std::chrono::high_resolution_clock::now();
+	//Matrix d = strassen_multiply(x, 0, 0, y, 0, 0, a.size);
+	//end_time = std::chrono::high_resolution_clock::now();
+	//
+	//
+	//std::chrono::duration<double> elapsed_time_2 = end_time - start_time;
+	//std::cout << "Elapsed time strassen: " << elapsed_time_2.count() << " s" << std::endl;
+	//
+	//// ----------------------------------------------------------------------------------------------- //
+	//
+	//start_time = std::chrono::high_resolution_clock::now();
+	//Matrix f = matrix_multiply(q, 0, 0, w, 0, 0, q.size);
+	//end_time = std::chrono::high_resolution_clock::now();
+	//
+	//std::chrono::duration<double> elapsed_time_3 = end_time - start_time;
+	//std::cout << "Elapsed time classic: " << elapsed_time_3.count() << " s" << std::endl;
 
 
 	//  matrix size : 11
 	//	Elapsed time recursion : 62.3705 s
 	//	Elapsed time strassen : 37.7255 s
 	//	Elapsed time classic : 53.9365 s
+
+	// matrix size : 8
+	// 	Elapsed time recursion : 0.706061 s
+	// 	Elapsed time strassen : 0.904052 s
+	// 	Elapsed time classic : 0.38132 s
+
 }
