@@ -62,7 +62,7 @@ public:
 
     int empty() {
         return size == 0;
-    } 
+    }
 
     void printStack() {
         for (int i = 0; i < size; i++) cout << stack[i] << "\n";
@@ -72,48 +72,38 @@ public:
 };
 
 vector<string> parse(string input) {
-	vector<string> output;
-	string temp = "";
-	for (auto i = 0; i < input.size(); i++) {
+    vector<string> output;
+    string temp = "";
+    for (auto i = 0; i < input.size(); i++) {
         char c = input[i];
         if (c >= '0' && c <= '9') {
             temp += c;
-        }  else if (c == ' ') {
+        }
+        else if (c == ' ') {
             output.push_back(temp);
             temp = "";
-        } else {
+        }
+        else {
             output.push_back(temp);
             temp = c;
             output.push_back(temp);
             temp = "";
         }
-	}
+    }
     output.push_back(temp);
-	return output;
-}
-
-bool is_digit(string input) {
-	for (auto i = 0; i < input.size(); i++) {
-		if (input[i] <= '0' || input[i] >= '9') return false;
-	}
-	return true;
+    return output;
 }
 
 int priority(string token) {
     int priority = 0;
-    if (token == "!" || token == "~")                 priority = 8;
-    if (token == "*" || token == "/" || token == "%") priority = 7;
-    if (token == "+" || token == "-")                 priority = 6;
-    if (token == "<<" || token == ">>")               priority = 5;
-    if (token == "&")                                 priority = 4;
-    if (token == "^")                                 priority = 3;
-    if (token == "|")                                 priority = 2;
-    if (token == "||")                                priority = 1;
-    
-    //if (!priority) {
-    //    cout << "Error: no operator";
-    //    exit(0);
-    //}
+    if (token == "!" || token == "~")                      priority = 8;
+    else if (token == "*" || token == "/" || token == "%") priority = 7;
+    else if (token == "+" || token == "-")                 priority = 6;
+    else if (token == "<<" || token == ">>")               priority = 5;
+    else if (token == "&")                                 priority = 4;
+    else if (token == "^")                                 priority = 3;
+    else if (token == "|")                                 priority = 2;
+    else if (token == "||")                                priority = 1;
 
     return priority;
 }
@@ -123,44 +113,76 @@ bool is_operator(string token) {
     return count(opers.begin(), opers.end(), token);
 }
 
-string polish_inverse(vector<string> input) {
-    string output = ""; string token; string oper; Stack stack;
+bool is_digit(string token) {
+    if (token[0] >= '0' && token[0] <= '9') return true;
+    if (token[0] == '-') return is_digit(token.substr(1));
+    return false;
+}
 
-    while (!input.empty()){
+string polish_inverse(vector<string> input) {
+    string output = "";
+    string token;
+    string oper;
+    Stack stack;
+
+    while (!input.empty()) {
         token = input[0];
-        if (is_digit(token)) output += token;
-        if (is_operator(token)) {
+        if (is_digit(token)) {
+            output += token;
+            output += " ";
+        }
+        else if (is_operator(token)) {
             while (!stack.empty() && (priority(stack.peek()) >= priority(token))) {
                 oper = stack.pop();
                 output += oper;
+                output += " ";
             }
             stack.push(token);
         }
-        if (token == "(") stack.push(token);
-        if (token == ")") {
+        else if (token == "(") {
+            stack.push(token);
+        }
+        else if (token == ")") {
             while (stack.peek() != "(") {
                 oper = stack.pop();
                 output += oper;
+                output += " ";
             }
             stack.pop();
         }
-        output += " ";
         input.erase(input.begin());
     }
-    stack.printStack();
-    cout << output;
+    while (!stack.empty()) {
+        oper = stack.pop();
+        output += oper;
+        output += " ";
+    }
     return output;
 }
 
 int main() {
-    string input = "(124 + (252 - 346)) * (25 / 235 * (236 / (6123 + 26))) - ((345 * 525 + 42 - !42) % 246)";
-    vector<string> parsed = parse(input);
+    vector<string> input = { "((161 + 162) / (163 - 164)) * (165 - 166 + 167) + (168 * 169)", 
+                             "((5 * 4) + 8) / (7 - 2) - 1", 
+                             "6 + (9 * (8 / (7 - 2))) - 3", 
+                             "((5 * 3) - 4) * (8 / (7 + 2)) + 2"
+                             "(((2 + 4) * (6 - 1)) / (5 + 1)) - 3", 
+                             "((6 * 4) / (9 - 3)) + ((7 - 5) * 3)",
+                             "6 * ((7 - 3) * (8 / (5 - 2))) + 9",
+                             "((8 * 2) + (9 / 3)) * ((6 - 4) * 5) - 1"
+                             "((9 - 4) * 3) / (8 + (7 % 3)) + 1",
+                             };
 
-    //for (auto x : parsed) cout << x;
-    Stack stack;
+    vector<string> output = {};
+    
+    for (auto x : input) {
+        vector<string> parsed = parse(x);
+        Stack stack;
 
-    string output = polish_inverse(parsed);
+        string out = polish_inverse(parsed);
+        output.push_back(out);
+    }
 
-    cout << endl;
+    for (auto x : output) cout << x << endl;
+
 
 }
