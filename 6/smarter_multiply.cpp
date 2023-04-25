@@ -20,10 +20,6 @@ public:
 		return &data[index * size];
 	}
 
-	int get_size() {
-		return size;
-	}
-
 	void print_matrix() {
 		cout << endl;
 		for (auto i = 0; i < size; i++) {
@@ -125,7 +121,6 @@ Matrix half_substractor(Matrix& first, int a_x_pos, int a_y_pos,
 
 }
 
-
 Matrix recursion_multiply(Matrix& first, int a_x_pos, int a_y_pos,
 	Matrix& second, int b_x_pos, int b_y_pos, int size) {
 	if (size == 16) {
@@ -169,28 +164,16 @@ Matrix strassen_multiply(Matrix first, int a_x_pos, int a_y_pos,
 
 	int middle = size / 2;
 
-	Matrix f_minus_h(middle);
-	Matrix a_plus_b(middle);
-	Matrix c_plus_d(middle);
-	Matrix g_minus_e(middle);
-	Matrix a_plus_d(middle);
-	Matrix e_plus_h(middle);
-	Matrix b_minus_d(middle);
-	Matrix g_plus_h(middle);
-	Matrix a_minus_c(middle);
-	Matrix e_plus_f(middle);
-
-	f_minus_h = half_substractor(second, b_x_pos, b_y_pos + middle, second, b_x_pos + middle, b_y_pos + middle, middle);
-	a_plus_b = half_adder(first, a_x_pos, a_y_pos, first, a_x_pos, a_y_pos + middle, middle);
-	c_plus_d = half_adder(first, a_x_pos + middle, a_y_pos, first, a_x_pos + middle, a_y_pos + middle, middle);
-	g_minus_e = half_substractor(second, b_x_pos + middle, b_y_pos, second, b_x_pos, b_y_pos, middle);
-	a_plus_d = half_adder(first, a_x_pos, a_y_pos, first, a_x_pos + middle, a_y_pos + middle, middle);
-	e_plus_h = half_adder(second, b_x_pos, b_y_pos, second, b_x_pos + middle, b_y_pos + middle, middle);
-	b_minus_d = half_substractor(first, a_x_pos, a_y_pos + middle, first, a_x_pos + middle, a_y_pos + middle, middle);
-	g_plus_h = half_adder(second, b_x_pos + middle, b_y_pos, second, b_x_pos + middle, b_y_pos + middle, middle);
-	a_minus_c = half_substractor(first, a_x_pos, a_y_pos, first, a_x_pos + middle, a_x_pos, middle);
-	e_plus_f = half_adder(second, b_x_pos, b_y_pos, second, b_x_pos, b_y_pos + middle, middle);
-
+	Matrix f_minus_h =  half_substractor(second, b_x_pos, b_y_pos + middle, second, b_x_pos + middle, b_y_pos + middle, middle);
+	Matrix a_plus_b	 = half_adder(first, a_x_pos, a_y_pos, first, a_x_pos, a_y_pos + middle, middle);
+	Matrix c_plus_d	 = half_adder(first, a_x_pos + middle, a_y_pos, first, a_x_pos + middle, a_y_pos + middle, middle);
+	Matrix g_minus_e =  half_substractor(second, b_x_pos + middle, b_y_pos, second, b_x_pos, b_y_pos, middle);
+	Matrix a_plus_d	 = half_adder(first, a_x_pos, a_y_pos, first, a_x_pos + middle, a_y_pos + middle, middle);
+	Matrix e_plus_h	 = half_adder(second, b_x_pos, b_y_pos, second, b_x_pos + middle, b_y_pos + middle, middle);
+	Matrix b_minus_d =  half_substractor(first, a_x_pos, a_y_pos + middle, first, a_x_pos + middle, a_y_pos + middle, middle);
+	Matrix g_plus_h	 = half_adder(second, b_x_pos + middle, b_y_pos, second, b_x_pos + middle, b_y_pos + middle, middle);
+	Matrix a_minus_c =  half_substractor(first, a_x_pos, a_y_pos, first, a_x_pos + middle, a_x_pos, middle);
+	Matrix e_plus_f	 = half_adder(second, b_x_pos, b_y_pos, second, b_x_pos, b_y_pos + middle, middle);
 
 	Matrix P1 = strassen_multiply(first, a_x_pos, a_y_pos, f_minus_h, 0, 0, middle);
 	Matrix P2 = strassen_multiply(a_plus_b, 0, 0, second, b_x_pos + middle, b_y_pos + middle, middle);
@@ -275,9 +258,9 @@ int main() {
 
 
 	//  matrix size : 11
-	//	Elapsed time recursion : 62.3705 s
-	//	Elapsed time strassen : 37.7255 s
-	//	Elapsed time classic : 53.9365 s
+	//  Elapsed time recursion : 62.3705 s
+	//  Elapsed time strassen : 37.7255 s
+	//  Elapsed time classic : 53.9365 s
 
 
 }
