@@ -96,14 +96,12 @@ vector<string> parse(string input) {
 
 int priority(string token) {
     int priority = 0;
-    if (token == "!" || token == "~")                      priority = 8;
-    else if (token == "*" || token == "/" || token == "%") priority = 7;
-    else if (token == "+" || token == "-")                 priority = 6;
-    else if (token == "<<" || token == ">>")               priority = 5;
-    else if (token == "&")                                 priority = 4;
-    else if (token == "^")                                 priority = 3;
-    else if (token == "|")                                 priority = 2;
-    else if (token == "||")                                priority = 1;
+    if (token == "!" || token == "~")                      priority = 6;
+    else if (token == "*" || token == "/" || token == "%") priority = 5;
+    else if (token == "+" || token == "-")                 priority = 4;
+    else if (token == "&")                                 priority = 3;
+    else if (token == "^")                                 priority = 2;
+    else if (token == "|")                                 priority = 1;
 
     return priority;
 }
