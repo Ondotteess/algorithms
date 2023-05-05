@@ -107,7 +107,7 @@ int priority(string token) {
 }
 
 bool is_operator(string token) {
-    vector<string> opers = { "!", "~", "*", "/", "%", "+", "-", "<<", ">>", "&", "^", "|", "||" };
+    vector<string> opers = { "!", "~", "*", "/", "%", "+", "-", "&", "^", "|" };
     return count(opers.begin(), opers.end(), token);
 }
 
