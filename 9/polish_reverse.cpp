@@ -112,9 +112,7 @@ bool is_operator(string token) {
 }
 
 bool is_digit(string token) {
-    if (token[0] >= '0' && token[0] <= '9') return true;
-    if (token[0] == '-') return is_digit(token.substr(1));
-    return false;
+    return (token[0] >= '0' && token[0] <= '9');
 }
 
 string polish_inverse(vector<string> input) {
