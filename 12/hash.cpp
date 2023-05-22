@@ -78,7 +78,7 @@ public:
 
 int main() {
 
-    BloomFilter bloomFilter(1000000, 0.0001); // Создание объекта фильтра Блума
+    BloomFilter bloomFilter(1000000, 0.0001);
 
     bloomFilter.insert("192.168.0.1");   
     bloomFilter.insert("10.0.0.1");    
