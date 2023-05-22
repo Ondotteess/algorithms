@@ -80,16 +80,16 @@ int main() {
 
     BloomFilter bloomFilter(1000000, 0.0001); // Создание объекта фильтра Блума
 
-    bloomFilter.insert("192.168.0.1");   // Вставка IP-адреса
-    bloomFilter.insert("10.0.0.1");     // Вставка IP-адреса
-    bloomFilter.insert("172.16.0.1");   // Вставка IP-адреса
-    bloomFilter.insert("192.168.1.1");   // Вставка IP-адреса
-    bloomFilter.insert("10.0.0.2");      // Вставка IP-адреса
-    bloomFilter.insert("172.16.0.2");   // Вставка IP-адреса
-    bloomFilter.insert("192.168.2.1");   // Вставка IP-адреса
-    bloomFilter.insert("10.0.0.3");     // Вставка IP-адреса
-    bloomFilter.insert("172.16.0.3");   // Вставка IP-адреса
-    bloomFilter.insert("192.168.3.1");  // Вставка IP-адреса
+    bloomFilter.insert("192.168.0.1");   
+    bloomFilter.insert("10.0.0.1");    
+    bloomFilter.insert("172.16.0.1");  
+    bloomFilter.insert("192.168.1.1");  
+    bloomFilter.insert("10.0.0.2");      
+    bloomFilter.insert("172.16.0.2");   
+    bloomFilter.insert("192.168.2.1");   
+    bloomFilter.insert("10.0.0.3");     
+    bloomFilter.insert("172.16.0.3");   
+    bloomFilter.insert("192.168.3.1");  
  
     cout << bloomFilter.contains("172.16.0.2")   << endl;
     cout << bloomFilter.contains("192.168.2.1")  << endl;
