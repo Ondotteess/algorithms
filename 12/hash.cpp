@@ -32,6 +32,7 @@ int nextPrime(int num) {
     }
 }
 
+size_t shortSize = sizeof(short);
 
 class Bitset {
 public:
@@ -39,12 +40,12 @@ public:
     size_t size;
 
     Bitset(size_t size) : size(size) {
-        size_t numShorts = (size + 15) / 16;
+        size_t numShorts = (size + 15) / shortSize;
         bits = new unsigned short[numShorts]();
     }
 
     Bitset() {
-        size_t numShorts = (1 + 15) / 16;
+        size_t numShorts = (1 + 15) / shortSize;
         bits = new unsigned short[numShorts]();
     }
 
@@ -54,8 +55,8 @@ public:
             return;
         }
 
-        size_t shortIndex = index / 16;
-        size_t bitIndex = index % 16; 
+        size_t shortIndex = index / shortSize;
+        size_t bitIndex = index % shortSize; 
 
         bits[shortIndex] |= (1 << bitIndex);
     }
