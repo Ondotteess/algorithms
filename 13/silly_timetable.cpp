@@ -20,31 +20,32 @@ public:
 
 class UnionFind {
 public:
-    vector<char> parent;
+    vector<int> parent;
     vector<int> rank;
     vector<int> frees;
 
-    void print_parent() {
+    void print() {
+        for (int i = 0; i < parent.size(); i++) {
+            cout << i << " ";
+        }
+        cout << "\t <-Index" << "\n";
+
         for (int i = 0; i < parent.size(); i++) {
             cout << parent[i] << " ";
         }
-        cout << "\n";
-    }
-
-    void print_rank() {
+        cout << "\t <-Task" << "\n";
+    
         for (int i = 0; i < parent.size(); i++) {
-            cout << rank[i] << " ";
+            cout  << rank[i] << " ";
         }
-        cout << "\n";
-    }
-
-    void print_frees() {
+        cout << "\t <- Rank" << "\n";
+  
         for (int i = 0; i < parent.size(); i++) {
             cout << frees[i] << " ";
         }
-        cout << "\n";
+        cout << "\t <- Frees" << "\n";
     }
-                
+
 
     UnionFind(int size) {
         parent.resize(size);
@@ -53,13 +54,14 @@ public:
         frees[0] = 0;
         frees[1] = 0;
         for (int i = 0; i < size; i++) {
-            if (i != 0) frees[i] = i-1;
+            parent[i] = i;
+            frees[i] = i - 1;
         }
 
     }
 
     void add(Task t) {
-        
+
     }
 
     int find(int x) {
@@ -82,6 +84,7 @@ public:
                 rank[rootX]++;
             }
         }
+        frees[rootX], frees[rootY] = min(frees[rootX], frees[rootY]);
     }
 };
 
@@ -150,25 +153,34 @@ int main() {
         -ВЕКТОР
     */
 
-    UnionFind uf(5);
-  
+    UnionFind uf(21);
+
+    uf.unite(8, 9);
+    uf.unite(8, 10);
+    uf.unite(8, 11);
+    uf.unite(8, 12);
+    uf.unite(8, 13);
+    uf.unite(8, 2);
+
+    uf.print();
+
 
     priority_queue<Task> taskQueue;
     Timetable tt(10);
-    
+
     taskQueue.push(Task('A', 3, 25));
     taskQueue.push(Task('B', 4, 10));
     taskQueue.push(Task('C', 1, 30));
     taskQueue.push(Task('D', 3, 50));
     taskQueue.push(Task('E', 3, 20));
-    
+
 
 
 
     /*while (!taskQueue.empty()) {
         Task maxTask = taskQueue.top();
         taskQueue.pop();
-    
+
         if (tt.table[maxTask.deadline].name == ' ') {
             tt.table[maxTask.deadline] = maxTask;
         } else {
