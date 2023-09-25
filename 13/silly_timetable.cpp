@@ -18,75 +18,6 @@ public:
     }
 };
 
-class UnionFind {
-public:
-    vector<int> parent;
-    vector<int> rank;
-    vector<int> frees;
-
-    void print() {
-        for (int i = 0; i < parent.size(); i++) {
-            cout << i << " ";
-        }
-        cout << "\t <-Index" << "\n";
-
-        for (int i = 0; i < parent.size(); i++) {
-            cout << parent[i] << " ";
-        }
-        cout << "\t <-Task" << "\n";
-    
-        for (int i = 0; i < parent.size(); i++) {
-            cout  << rank[i] << " ";
-        }
-        cout << "\t <- Rank" << "\n";
-  
-        for (int i = 0; i < parent.size(); i++) {
-            cout << frees[i] << " ";
-        }
-        cout << "\t <- Frees" << "\n";
-    }
-
-
-    UnionFind(int size) {
-        parent.resize(size);
-        rank.resize(size, 0);
-        frees.resize(size);
-        frees[0] = 0;
-        frees[1] = 0;
-        for (int i = 0; i < size; i++) {
-            parent[i] = i;
-            frees[i] = i - 1;
-        }
-
-    }
-
-    void add(Task t) {
-
-    }
-
-    int find(int x) {
-        if (parent[x] == x) return x;
-        return parent[x] = find(parent[x]);
-    }
-
-    void unite(int x, int y) {
-        int rootX = find(x);
-        int rootY = find(y);
-        if (rootX != rootY) {
-            if (rank[rootX] > rank[rootY]) {
-                parent[rootY] = rootX;
-            }
-            else if (rank[rootX] < rank[rootY]) {
-                parent[rootX] = rootY;
-            }
-            else {
-                parent[rootY] = rootX;
-                rank[rootX]++;
-            }
-        }
-        frees[rootX], frees[rootY] = min(frees[rootX], frees[rootY]);
-    }
-};
 
 class Timetable {
 public:
@@ -134,8 +65,101 @@ public:
     }
 };
 
+class UnionFind {
+public:
+
+
+
+    vector<char> parent;
+    vector<int> rank;
+    vector<int> frees;
+
+    void print() {
+        for (int i = 0; i < parent.size(); i++) {
+            cout << i << " ";
+        }
+        cout << "\t <-Index" << "\n";
+
+        for (int i = 0; i < parent.size(); i++) {
+            cout << static_cast<char>(parent[i] + 'A') << " ";
+        }
+        cout << "\t <-Parent" << "\n";
+
+        for (int i = 0; i < parent.size(); i++) {
+            cout << rank[i] << " ";
+        }
+        cout << "\t\t <- Rank" << "\n";
+
+        for (int i = 0; i < parent.size(); i++) {
+            cout << frees[i] << " ";
+        }
+        cout << "\t <- Frees" << "\n";
+    }
+
+
+    UnionFind(int size) {
+        parent.resize(size);
+        rank.resize(size, 0);
+        frees.resize(size);
+        frees[0] = 0;
+        frees[1] = 0;
+        for (int i = 0; i < size; i++) {
+            parent[i] = i;
+            frees[i] = i - 1;
+        }
+    }
+
+
+    int find(int x) {
+        if (parent[x] == x) return x;
+        return parent[x] = find(parent[x]);
+    }
+
+    void unite(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+        if (rootX != rootY) {
+            if (rank[rootX] > rank[rootY]) {
+                parent[rootY] = rootX;
+            }
+            else if (rank[rootX] < rank[rootY]) {
+                parent[rootX] = rootY;
+            }
+            else {
+                parent[rootY] = rootX;
+                rank[rootX]++;
+            }
+        }
+        // cout << endl << rootX << " " << rootY << endl;
+        int min_root = min(frees[rootX], frees[rootY]);
+
+        if (min_root == -1) {
+            if (frees[rootX] == -1) {
+                frees[rootX] = frees.size() - 1;
+                unite(rootX, frees.size() - 1);
+
+            }
+            if (frees[rootY] == -1) {
+                frees[rootY] = frees.size() - 1;
+                unite(rootY, frees.size() - 1);
+            }
+        }
+        else if (parent[min_root] == min_root) {
+            frees[rootX], frees[rootY] = min_root;
+        }
+        else {
+            while (parent[min_root] != min_root) {
+                min_root = frees[min_root];
+                frees[rootX], frees[rootY] = min_root;
+            }
+        }
+    }
+
+};
+
 class Timetable_U {
 public:
+
     vector<Task> table;
 
     Timetable_U(int size) {
@@ -147,26 +171,16 @@ public:
 
 int main() {
 
-    /*
-        СДЕЛАТЬ УФ ПО ДЕДЛАЙНАМ
-        ДЛЯ КАЖДОГО КЛАССА СОХРАНЯТЬ БЛИЖАЙШЕЕ СВОБОДНОЕ МЕСТО
-        -ВЕКТОР
-    */
-
-    UnionFind uf(21);
-
-    uf.unite(8, 9);
-    uf.unite(8, 10);
-    uf.unite(8, 11);
-    uf.unite(8, 12);
-    uf.unite(8, 13);
-    uf.unite(8, 2);
-
-    uf.print();
-
-
     priority_queue<Task> taskQueue;
-    Timetable tt(10);
+
+    Timetable_U tt(5);
+    UnionFind uf(10);
+
+    uf.unite(3, 4);
+    uf.unite(3, 5);
+    uf.unite(3, 6);
+    uf.unite(3, 7);
+
 
     taskQueue.push(Task('A', 3, 25));
     taskQueue.push(Task('B', 4, 10));
@@ -174,20 +188,44 @@ int main() {
     taskQueue.push(Task('D', 3, 50));
     taskQueue.push(Task('E', 3, 20));
 
+    // while (!taskQueue.empty()) {
+    //     Task maxTask = taskQueue.top();
+    //     taskQueue.pop();
+    // 
+    //     int name = static_cast<int>(maxTask.name - 'A');
+    //     int deadline = maxTask.deadline;
+    //     int fine = maxTask.fine;
+    // 
+    // }
+    
+    uf.print();
+ 
+
+    //while (!taskQueue.empty()) {
+    //    Task maxTask = taskQueue.top();
+    //    taskQueue.pop();
+    //
+    //    char name = maxTask.name;
+    //    int deadline = maxTask.deadline;
+    //    int fine = maxTask.fine;
+    //
+    //    uf.unite(name, deadline);
+    //    tt.table[uf.frees[uf.find(name)]] = name;
+    //
+    //}
 
 
-
-    /*while (!taskQueue.empty()) {
-        Task maxTask = taskQueue.top();
-        taskQueue.pop();
-
-        if (tt.table[maxTask.deadline].name == ' ') {
-            tt.table[maxTask.deadline] = maxTask;
-        } else {
-            tt.push_left(maxTask);
-        }
-    }
-    */
+    // while (!taskQueue.empty()) {
+    //     Task maxTask = taskQueue.top();
+    //     taskQueue.pop();
+    // 
+    //     if (tt.table[maxTask.deadline].name == ' ') {
+    //         tt.table[maxTask.deadline] = maxTask;
+    //     } else {
+    //         tt.push_left(maxTask);
+    //     }
+    // }
+    
 
 
 
