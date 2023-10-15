@@ -126,29 +126,30 @@ pair<int, pair<House, House>> findMinFirstElement(const vector <pair<int, pair<H
     return *min_element;
 }
 
-void merge(House h1, House h2, vector<vector<House>>& districts) {
-    vector<House> h1District;
-    vector<House> h2District;
+void merge(House h1, House h2, std::vector<std::vector<House>>& districts) {
+    std::vector<House> h1District;
+    std::vector<House> h2District;
 
-    for (vector<House>& district : districts) {
-        for (House& house : district) {
-            if (house == h1) {
-                h1District = district;
-            }
-            if (house == h2) {
-                h2District = district;
-            }
+    // Находим векторы, содержащие h1 и h2
+    for (auto it = districts.begin(); it != districts.end(); ) {
+        if (std::find(it->begin(), it->end(), h1) != it->end()) {
+            h1District = *it;
+            it = districts.erase(it);
+        }
+        else if (std::find(it->begin(), it->end(), h2) != it->end()) {
+            h2District = *it;
+            it = districts.erase(it);
+        }
+        else {
+            ++it;
         }
     }
 
-    if (!h1District.empty() && !h2District.empty()) {
-        h1District.insert(h1District.end(), h2District.begin(), h2District.end());
+    // Объединяем векторы
+    h1District.insert(h1District.end(), h2District.begin(), h2District.end());
 
-        districts.erase(std::remove(districts.begin(), districts.end(), h2District), districts.end());
-    }
-    else {
-        std::cout << "Один из домов не найден в districts." << std::endl;
-    }
+    // Добавляем объединенные векторы обратно в districts
+    districts.push_back(h1District);
 }
 
 void print_districts(vector<vector<House>>& districts) {
