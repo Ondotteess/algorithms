@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <queue>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 
@@ -17,7 +18,7 @@ public:
     int number;
     bool is_tavern;
 
-    House(string a, string b, int c, int d, int e, bool f) : prefix(a), type(b), x_pos(c), y_pos(d),number(e), is_tavern(f) {};
+    House(string a, string b, int c, int d, int e, bool f) : prefix(a), type(b), x_pos(c), y_pos(d), number(e), is_tavern(f) {};
 
     double calculateDistance(const House& otherHouse) const {
         int dx = x_pos - otherHouse.x_pos;
@@ -26,17 +27,35 @@ public:
     }
 
     bool operator==(const House& other) const {
-        // Здесь вы должны определить, как сравнивать два объекта House
-        // Возвращайте true, если они равны, и false в противном случае
-        // Например, сравнение по какому-то полю
         return x_pos == other.x_pos && y_pos == other.y_pos;
     }
 
 };
 
+class Metric {
+private:
+    int distance;
+    std::pair<House, House> house_pair;
+
+public:
+    Metric(int dist, const std::pair<House, House>& pair) : distance(dist), house_pair(pair) {}
+
+    int getDistance() const {
+        return distance;
+    }
+
+    std::pair<House, House> getHousePair() const {
+        return house_pair;
+    }
+
+    bool operator<(const Metric& other) const {
+        return distance > other.distance;
+    }
+};
+
 struct CompareFirst {
     bool operator()(const pair<int, pair<House, House>>& a, const pair<int, pair<House, House>>& b) const {
-        return a.first < b.first; 
+        return a.first < b.first;
     }
 };
 
@@ -106,25 +125,20 @@ pair<vector<House>, vector<int>> parser(string path) {
 
 
 
-vector<pair<int, pair<House, House>>> metrics(vector<House>& houses) {
-    vector<pair<int, pair<House, House>>> result;
+priority_queue<Metric> metrics(vector<House>& houses) {
+    priority_queue<Metric> result;
     for (int i = 0; i < houses.size(); i++) {
         for (int j = i + 1; j < houses.size(); j++) {
-            auto h1 = houses[i]; 
+            auto h1 = houses[i];
             auto h2 = houses[j];
             double metric = h1.calculateDistance(h2);
-            result.push_back(make_pair(metric, make_pair(h1, h2)));
+            Metric m(metric, make_pair(h1, h2));
+            result.push(m);
         }
     }
     return result;
 }
 
-pair<int, pair<House, House>> findMinFirstElement(const vector <pair<int, pair<House, House>>>& vec) {
-
-    auto min_element = std::min_element(vec.begin(), vec.end(), CompareFirst());
-
-    return *min_element;
-}
 
 void merge(House h1, House h2, std::vector<std::vector<House>>& districts) {
     std::vector<House> h1District;
@@ -169,28 +183,29 @@ int main() {
     pair<vector<House>, vector<int>> p = parser("1.txt");
     vector<House> houses = p.first;
     vector<int> info = p.second;
-    vector<pair<int, pair<House, House>>> distances = metrics(houses);
 
-
+    priority_queue<Metric> distances = metrics(houses);
 
     vector<vector<House>> districts;
+    
     for (int i = 0; i < houses.size(); i++) {
         vector<House> district = { houses[i] };
         districts.push_back(district);
     }
 
-    print_districts(districts);
+
+    while (districts.size() > info[0]) {
+        Metric distance = distances.top();
+        merge(distance.getHousePair().first, distance.getHousePair().second, districts);
+        distances.pop();
+    }
 
     
-
-    //cout << "---- " << findMinFirstElement(distances).first << " ----\n";
-
-    House h1 = findMinFirstElement(distances).second.first;
-    House h2 = findMinFirstElement(distances).second.second;
-
-    merge(h1, h2, districts);
     print_districts(districts);
-    
+
+
+
+
     // for (auto h : distances) {
     //     cout << h.first << " " << "(" << h.second.first.prefix << " " << h.second.first.number << " , " << h.second.second.prefix << " " << h.second.second.number << ")\n";
     // }
