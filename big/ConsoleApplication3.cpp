@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string.h>
 #include <vector>
 #include <fstream>
@@ -35,19 +35,21 @@ public:
 		usages = 0;
 	};
 
-	int get_field_size()    { return size; }
+	void set_field_size(int new_size) { size = new_size; }
 
-	int get_usages() const  { return usages;}
+	int get_field_size() { return size; }
+
+	int get_usages() const { return usages; }
 
 	string get_field_name() { return name; }
 
 	string get_field_type() { return type; }
 
-	void inc_usage()	    { usages++; }
+	void inc_usage() { usages++; }
 
-	void do_not_offload()   { offloaded = false; }
+	void do_not_offload() { offloaded = false; }
 
-	bool is_offloaded()     { return offloaded; }
+	bool is_offloaded() { return offloaded; }
 };
 
 bool compareFields(const Field a, const Field& b) {
@@ -62,6 +64,7 @@ private:
 	vector<Field> fields;
 	vector<Field> safed_fields;
 	vector<string> copies;
+	bool offload_flag = false;
 
 	bool need_offload() {
 		for (Field f : fields) {
@@ -72,7 +75,7 @@ private:
 
 	int get_fields_size(vector<Field> new_fields) {
 		int sum = 0;
-		for (Field& f: new_fields) {
+		for (Field& f : new_fields) {
 			sum += f.get_field_size();
 		}
 		return sum;
@@ -82,6 +85,14 @@ public:
 	Class(string n) {
 		name = n;
 		size = 0;
+	}
+
+	bool get_offload_flag() { 
+		return offload_flag;
+	}
+
+	void set_offload_flag() {
+		offload_flag = true;
 	}
 
 	void set_class_size(int new_size) {
@@ -104,7 +115,7 @@ public:
 
 	int get_class_size() { return size; }
 
-	vector<Field> get_fields() { return fields; }
+	vector<Field>& get_fields() { return fields; }
 
 	void add_field(Field f) {
 		fields.push_back(f);
@@ -144,6 +155,10 @@ public:
 		}
 	}
 
+	void reverse_class_fields() {
+		reverse(fields.begin(), fields.end());
+	}
+
 };
 
 class Classes {
@@ -171,7 +186,7 @@ public:
 		Class _integer = Class("int");
 		Class _float = Class("float");
 		Class _address = Class("address");
-		
+
 		_null.add_field(Field("null", "-", 0));
 		_byte.add_field(Field("byte", "-", 1));
 		_short.add_field(Field("short", "-", 2));
@@ -200,24 +215,58 @@ public:
 		}
 	}
 
-	vector<Class> get_class() {
+	vector<Class> get_classes() {
 		return classes;
 	}
 
 	int get_class_size(Class c) {
-		for (Class& _c: classes) {
+		for (Class& _c : classes) {
 			if (_c.get_class_name() == c.get_class_name()) {
 				int sum = 0;
 				for (Field f : _c.get_fields()) {
-					sum += f.get_field_size();
+					string name = f.get_field_type();
+					Class a = get_class(name);
+					sum += a.get_class_size();
 				}
 				return sum;
 			}
 		}
 	}
 
-	vector<Class> get_classes() {
-		return classes;
+	//vector<Class> get_classes() {
+	//	return classes;
+	//}
+
+	void set_class_size(string name, int new_size) { 
+		for (Class& c : classes) {
+			if (c.get_class_name() == name) {
+				c.set_class_size(new_size);
+			}
+		}
+	}
+
+	void set_class_fields(vector<Field> new_fields, Class _c) {
+		for (Class& c : classes) {
+			if (c.get_class_name() == _c.get_class_name()) {
+				c.set_fields(new_fields);
+			}
+		}
+	}
+
+	void reverse_fields(Class& _c) {
+		for (Class& c : classes) {
+			if (c.get_class_name() == _c.get_class_name()) {
+				c.reverse_class_fields();
+			}
+		}
+	}
+
+	void need_to_offload(Class _c) {
+		for (Class& c : classes) {
+			if (_c.get_class_name() == c.get_class_name()) {
+				c.set_offload_flag();
+			}
+		}
 	}
 
 private:
@@ -235,11 +284,20 @@ void dynamic(Class& _class, Classes& classes, int max_size) {
 
 	if (size > max_size) {
 		max_size -= 8;
-		cout << "Add offload\n" << size << " " << max_size << endl;
+
+		classes.need_to_offload(_class);
+		//cout << "Add offload\n" << size << " " << max_size << endl;
+	}
+	else {
+
+
+		return;
 	}
 
+	classes.need_to_offload(_class);
+
 	for (int i = 1; i < _class.get_fields().size() + 1; i++) {
-		for (int x = 0; x < max_size; x++) {
+		for (int x = 0; x < max_size + 1; x++) {
 
 			pair<int, int> size_usages = make_pair(_class.get_fields()[i - 1].get_field_size(), _class.get_fields()[i - 1].get_usages());
 			int size = size_usages.first;
@@ -252,16 +310,16 @@ void dynamic(Class& _class, Classes& classes, int max_size) {
 	}
 
 	//cout << dp[fields.size() - 1][max_size - 1] << endl;
-	// for (int i = 0; i < fields.size(); i++) {
-	// 	for (int x = 0; x < max_size; x++) {
-	// 		cout << dp[i][x] << " ";
-	// 	}
-	// 	cout << endl;
-	// }
+	//for (int i = 0; i < _class.get_fields().size(); i++) {
+	//	for (int x = 0; x < max_size + 1; x++) {
+	//		cout << dp[i][x] << " ";
+	//	}
+	//	//cout << endl;
+	//}
 
 
 	int i = _class.get_fields().size();
-	int x = max_size - 1;
+	int x = max_size;
 
 	vector<Field> new_fields;
 
@@ -272,22 +330,34 @@ void dynamic(Class& _class, Classes& classes, int max_size) {
 
 
 		if (x - size >= 0 && dp[i][x] == dp[i - 1][x - size] + usages) {
-			cout << "Class: " << _class.get_class_name() << " Field: " << _class.get_fields()[i - 1].get_field_name() << " " << _class.get_fields()[i - 1].get_field_type() << endl;
+			//cout << "Class: " << _class.get_class_name() << " Field: " << _class.get_fields()[i - 1].get_field_name() << " " << _class.get_fields()[i - 1].get_field_type() << endl;
 			new_fields.push_back(_class.get_fields()[i - 1]);
 			x -= size;
 		}
 
 		i--;
 	}
+	reverse(new_fields.begin(), new_fields.end());
 
-	_class.set_fields(new_fields);
+	auto it = new_fields.begin();
+	while (it != new_fields.end()) {
+		if (it->get_usages() == 0) {
+			it = new_fields.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	classes.set_class_fields(new_fields, _class);
 	int new_size = 0;
-	
+
+
 	for (Field f : new_fields) {
 		new_size += f.get_field_size();
 	}
 
-	_class.set_class_size(new_size);
+	classes.set_class_size(_class.get_class_name(), new_size + 8);
 
 	cout << endl;
 
@@ -362,15 +432,26 @@ int main() {
 			classes.get_class(_class).inc_field_usage(field);
 			tokens[i] = classes.get_class(_class).get_type_field(field);
 		}
-		
+
 	}
 
 	for (Class& c : classes.get_classes()) {
 		dynamic(c, classes, capacity);
 	}
-	
+
 	classes.print_non_offloaded_fields();
-	
+
+	for (Class a : classes.get_classes()) {
+		if (a.is_primitive()) continue;
+		cout << a.get_class_name() << ": ";
+		for (Field f : a.get_fields()) {
+			cout << "<"<<f.get_field_type()<< " " << f.get_field_name()<<"> " << " ";
+		}
+		
+		if (a.get_offload_flag()) cout << "Address offload";
+		cout << endl;
+	}
+
 	int i = 0;
 
 }
