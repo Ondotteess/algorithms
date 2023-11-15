@@ -289,23 +289,26 @@ void dynamic(Class& _class, Classes& classes, int max_size) {
 		//cout << "Add offload\n" << size << " " << max_size << endl;
 	}
 	else {
-
+		classes.set_class_size(_class.get_class_name(), size);
 
 		return;
 	}
 
 	classes.need_to_offload(_class);
+	_class.reverse_class_fields();
 
 	for (int i = 1; i < _class.get_fields().size() + 1; i++) {
 		for (int x = 0; x < max_size + 1; x++) {
 
 			pair<int, int> size_usages = make_pair(_class.get_fields()[i - 1].get_field_size(), _class.get_fields()[i - 1].get_usages());
-			int size = size_usages.first;
+			int _size = size_usages.first;
 			int usages = size_usages.second;
 
-			if (x - size >= 0) dp[i][x] = max(dp[i - 1][x], dp[i - 1][x - size] + usages);
-			else dp[i][x] = dp[i - 1][x];
+			//if (x - _size >= 0) dp[i][x] = max(dp[i - 1][x], dp[i - 1][x - size] + usages);
+			//else dp[i][x] = dp[i - 1][x];
 
+			if (_size > x) dp[i][x] = dp[i - 1][x];
+			else dp[i][x] = max(dp[i - 1][x], dp[i - 1][x - _size] + usages);
 		}
 	}
 
@@ -325,19 +328,19 @@ void dynamic(Class& _class, Classes& classes, int max_size) {
 
 	while (i > 0 && x > 0) {
 		pair<int, int> size_usages = make_pair(_class.get_fields()[i - 1].get_field_size(), _class.get_fields()[i - 1].get_usages());
-		int size = size_usages.first;
+		int _size = size_usages.first;
 		int usages = size_usages.second;
 
 
-		if (x - size >= 0 && dp[i][x] == dp[i - 1][x - size] + usages) {
+		if (x - _size >= 0 && dp[i][x] == dp[i - 1][x - _size] + usages) {
 			//cout << "Class: " << _class.get_class_name() << " Field: " << _class.get_fields()[i - 1].get_field_name() << " " << _class.get_fields()[i - 1].get_field_type() << endl;
 			new_fields.push_back(_class.get_fields()[i - 1]);
-			x -= size;
+			x -= _size;
 		}
 
 		i--;
 	}
-	reverse(new_fields.begin(), new_fields.end());
+	//reverse(new_fields.begin(), new_fields.end());
 
 	auto it = new_fields.begin();
 	while (it != new_fields.end()) {
@@ -448,7 +451,7 @@ int main() {
 			cout << "<"<<f.get_field_type()<< " " << f.get_field_name()<<"> " << " ";
 		}
 		
-		if (a.get_offload_flag()) cout << "Address offload";
+		if (a.get_offload_flag()) cout << "<Address offloaded>";
 		cout << endl;
 	}
 
