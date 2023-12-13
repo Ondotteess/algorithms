@@ -17,7 +17,7 @@ private:
     int damage;
 
 public:
-    Cell(int t): type(t), damage(0) {}
+    Cell(int t) : type(t), damage(0) {}
 
     int get_damage() const {
         return damage;
@@ -60,10 +60,11 @@ public:
     }
 
     void updateRange(int x1, int y1, int x2, int y2, int value) {
-        update(x1, y1, value);
-        update(x2 + 1, y1, -value);
-        update(x1, y2 + 1, -value);
-        update(x2 + 1, y2 + 1, value);
+        for (int i = x1; i < x2; i++) {
+            for (int j = y1; j < y2; j++) {
+                update(i, j, value);
+            }
+        }
     }
 
     int query(int x, int y) const {
@@ -77,7 +78,7 @@ public:
     }
 
     int queryRange(int x1, int y1, int x2, int y2) const {
-        return query(x2, y2) - query(x1 , y2) - query(x2, y1) + query(x1, y1);
+        return query(x2, y2) - query(x1, y2) - query(x2, y1) + query(x1, y1);
     }
 
     void addCell(int x, int y, int type) {
@@ -130,8 +131,8 @@ void testSum() {
     int damage = rand() % 100;
     int checkSum = 0;
 
-    for (int i = 0; i < 1000; i++) {                              
-                                                                 //
+    for (int i = 0; i < 1000; i++) {
+        
         checkSum += damage;                                      //  Fill with the damage
         ship.update(rand() % x_size, rand() % y_size, damage);   //
         damage = rand() % 100;                                   //
@@ -168,30 +169,30 @@ void testQuery() {
 
     long long checkSum1 = 0;
     long long checkSum2 = 0;
-    
+
     int x_1 = rand() % x_size;
     int y_1 = rand() % y_size;
-    
+
     int x_2 = x_1 + (rand() % (x_size - x_1));
     int y_2 = y_1 + (rand() % (y_size - y_1));
-    
+
     for (int i = 0; i < 9999; i++) {
-    
+
         checkSum1 += ship.queryRange(x_1, y_1, x_2, y_2);
         checkSum2 += ship.sillySum(x_1, y_1, x_2, y_2);
-    
+
         x_1 = rand() % x_size;
         y_1 = rand() % y_size;
         x_2 = x_1 + (rand() % (x_size - x_1));
         y_2 = y_1 + (rand() % (y_size - y_1));
-    
+
     }
 
     if (checkSum1 != checkSum2) {
         cout << "Uncorrect queryrange";
         exit(0);
     }
-    
+
     cout << "Fenwick multysum:\t" << checkSum1 << endl;
     cout << "Silly checksum:\t\t" << checkSum2 << endl;
 
@@ -207,9 +208,13 @@ void testUpdateRange() {
 
     Ship ship = Ship(x_size, y_size);
 
-    ship.updateRange(0, 0, 3, 3, 6);
+    ship.updateRange(1, 1, 3, 3, 6);
 
-    ship.printFenwickShip();
+    ship.updateRange(3, 3, 5, 5, 12);
+    ship.updateRange(0, 0, 2, 2, 1);
+
+
+    ship.printShip();
 
     cout << ship.getTotalDamage();
 
