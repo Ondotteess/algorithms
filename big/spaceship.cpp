@@ -57,6 +57,10 @@ public:
         maxDamage = md;
     }
 
+    int getMaxDamage() {
+        return maxDamage;
+    }
+
     void setRect(int x_1, int y_1, int x_2, int y_2) {
         x1 = x_1;
         y1 = y_1;
@@ -74,7 +78,7 @@ public:
     FenwickTree2D() : FenwickTree2D(0, 0) {}
     
 
-    FenwickTree2D(int rows, int cols) : n(rows), m(cols) {
+    FenwickTree2D(int rows, int cols) : n(rows + 1), m(cols + 1) {
         B.resize(n + 1, vector<vector<int>>(m + 1, vector<int>(4, 0)));
     }
 
@@ -163,6 +167,7 @@ public:
     
     }
 
+
     void updateType(int x1, int y1, int x2, int y2, int type, string name, int maxDamage) {
         if (type == VOID) {
             vector<int> rectVoid = { x1, y1, x2 - 1, y2 - 1 };
@@ -199,17 +204,31 @@ public:
                 fenwick.update(interX1, interY1, interX2, interY2, -value);
             }
         }
+        
+        fenwick.update(x1, y1, x2 - 1 , y2 - 1, value);
 
         for (const vector<int>& rect : rectComps) {
+
+            int max = shipGrid[rect[0]][rect[1]].getMaxDamage();
+            int curr = fenwick.query(rect[0], rect[1], rect[2], rect[3]);
+
+            if (curr >= max) {
+                cout << shipGrid[rect[0]][rect[1]].getName() << " exploded! Ship is destroyed.";
+                destroyed = true;
+                return;
+            }
+
             if (rect[0] < x2 && rect[2] >= x1 && rect[1] < y2 && rect[3] >= y1) {
                 compNames.push_back(shipGrid[rect[0]][rect[1]].getName());
                 compInRect = true;
             }
         }
-        
-        fenwick.update(x1, y1, x2 - 1 , y2 - 1, value);
 
-        damage += fenwick.query(x1, y1, x2, y2);
+        //cout << endl << endl;
+        //fenwick.print();
+        //cout << endl << endl;
+
+        damage = fenwick.query(0, 0, rows - 1, cols - 1);
 
         int area = (x2 - x1) * (y2 - y1);
         int areaDamage = fenwick.query(x1, y1, x2, y2);
@@ -220,27 +239,37 @@ public:
             return;
         }
 
+
+
         if (areaDamage >= area * oneTimeDamageLimit) {
 
-            if (voidInRect) return;
-            vector<int> rect = { x1, y1, x2, y2 };
+            if (voidInRect) {
+                cout << "Received " << getTotalDamage() << " damage in total." << endl;
+                return;
+            }
+            collapses++;
+            vector<int> rect = { x1, y1, x2 - 1, y2 - 1};
             rectVoids.push_back(rect);
 
             cout << "Received " << getTotalDamage() << " damage in total, section {" << x1 << ", " << y1 << ", " << x2 << ", " << y2 << "} collapsed." << endl;
 
             if (collapses >= collapseLimit) {
                 cout << "And it was the last collapse the ship can handle. It was destroyed." << endl;
+                destroyed = true;
+                return;
             }
 
             if (compInRect) {
                 sort(compNames.begin(), compNames.end());
                 string name = compNames[0];
-                cout << name << " exploded! Ship is destroyed." << endl;
+                cout << "Because of that " << name << " exploded! Ship is destroyed." << endl;
                 destroyed = true;
                 return;
             }
 
-            collapses++;
+            
+
+            return;
            
         }
 
@@ -322,14 +351,14 @@ int main() {
         ship.updateDamage(x1, y1, x2, y2, damage);
 
         if (ship.isDestroyed()) {
-            ship.printShip();
+            //ship.printShip();
             exit(0);
         }
         else {
         }
     }
 
-    ship.printShip();
+    //ship.printShip();
 
 
 }
