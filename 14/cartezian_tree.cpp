@@ -7,7 +7,8 @@ class TreapNode {
 public:
     int value;
     int priority;
-    int size; 
+    int size;
+    int subtreeSum;  
 
     TreapNode* left;
     TreapNode* right;
@@ -16,6 +17,7 @@ public:
         value = val;
         priority = rand();
         size = 1;
+        subtreeSum = val;  
         left = nullptr;
         right = nullptr;
     }
@@ -80,27 +82,28 @@ private:
         else if (left->priority > right->priority) {
             left->right = merge(left->right, right);
             updateSize(left);
+            updateSubtreeSum(left);  
             return left;
         }
         else {
             right->left = merge(left, right->left);
             updateSize(right);
+            updateSubtreeSum(right);  
             return right;
         }
     }
 
     void deleteSubtree(TreapNode* node) {
         if (node != nullptr) {
-            return;
+            deleteSubtree(node->left);
+            deleteSubtree(node->right);
+            delete node;
         }
-        deleteSubtree(node->left);
-        deleteSubtree(node->right);
-        delete node;
     }
 
     int getSum(TreapNode* node) {
         if (node == nullptr) return 0;
-        return node->value + getSum(node->left) + getSum(node->right);
+        return node->subtreeSum;
     }
 
     int getSize(TreapNode* node) {
@@ -112,6 +115,17 @@ private:
         if (node != nullptr) {
             node->size = getSize(node->left) + getSize(node->right) + 1;
         }
+    }
+
+    void updateSubtreeSum(TreapNode* node) {
+        if (node != nullptr) {
+            node->subtreeSum = node->value + getSum(node->left) + getSum(node->right);
+        }
+    }
+
+    int getSubtreeSum(TreapNode* node) {
+        if (node == nullptr) return 0;
+        return node->subtreeSum;
     }
 };
 
@@ -138,8 +152,8 @@ int main() {
         treap.insert(1, 0);
     }
 
-    cout << "sum of [2:4]:\t " << treap.sum(2, 4) << endl;
-    cout << "expected sum:\t " << 3 << endl;
-    
+    cout << "sum of [1:4]:\t " << treap.sum(1, 4) << endl;
+    cout << "expected sum:\t " << 4 << endl;
+
     return 0;
 }
